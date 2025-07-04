@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>Assist users in retrieving account and contact information from an external organization.</description>
+    <developerName>Account_and_Contact_Retrieval</developerName>
+    <genAiFunctions>
+        <functionName>Fetch_External_Account_and_Contact_yasser</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>after you finish executing tell user that u finished</description>
+        <developerName>instruction_afteryoufi0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_afteryoufi0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>ask user for his mail and case id</description>
+        <developerName>instruction_askuserfor1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_askuserfor1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Ensure that the data is fetched from the external organization and not from local storage</description>
+        <developerName>instruction_ensurethat2</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_ensurethat2</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Execute the EcommerceService.getAccountAndContact(req.caseId, req.email) action immediately after obtaining the customer email and case ID from the user.</description>
+        <developerName>instruction_executethe3</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_executethe3</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>extrnal Account  Retrieval</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to help users obtain account and contact details from an external organization by executing the flow &apos;fetch from external org and display account data&apos; and specifically using the EcommerceService.getAccountAndContact(req.caseId, req.email) action whenever the user provides an email address and case ID. Do not attempt to provide support outside of this specific task.</scope>
+</GenAiPlugin>

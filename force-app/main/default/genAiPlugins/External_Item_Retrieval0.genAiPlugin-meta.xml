@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>Handles user requests to retrieve external items. This topic will manage interactions related to obtaining items not internally available.</description>
+    <developerName>External_Item_Retrieval0</developerName>
+    <genAiFunctions>
+        <functionName>get_External_items</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>Gather as much information as possible from the user by asking clarifying questions.</description>
+        <developerName>instruction_gatherasmu0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_gatherasmu0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>If a user requests an external item, ask for necessary details such order id .</description>
+        <developerName>instruction_ifauserreq1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_ifauserreq1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>When providing retrieval instructions, ensure they are clear and detailed to avoid user confusion.</description>
+        <developerName>instruction_whenprovid2</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_whenprovid2</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>External Item Retrieval</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to assist users in retrieving external items by guiding them through the necessary steps and providing relevant information.</scope>
+</GenAiPlugin>

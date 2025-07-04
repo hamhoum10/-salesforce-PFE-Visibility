@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Customer Service Extern</label>
+    <protected>false</protected>
+    <values>
+        <field>class_name__c</field>
+        <value xsi:type="xsd:string">EcommerceService</value>
+    </values>
+    <values>
+        <field>interface_name__c</field>
+        <value xsi:type="xsd:string">ICustomerService</value>
+    </values>
+    <values>
+        <field>provider__c</field>
+        <value xsi:type="xsd:string">SFEX</value>
+    </values>
+    <values>
+        <field>service__c</field>
+        <value xsi:type="xsd:string">Customer Service</value>
+    </values>
+</CustomMetadata>

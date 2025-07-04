@@ -1,0 +1,14 @@
+{
+  "required" : [ "externalOrder" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "externalOrder" : {
+      "title" : "externalOrder",
+      "description" : "get",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

@@ -1,20 +1,10 @@
 list <Case> cases = [
     SELECT Id
       FROM Case];
-List<Contact> contacts=[
-  SELECT Id
-  FROM Contact 
-];
-
-List<Account> Accounts=[
-  SELECT Id
-  FROM Account 
-];
-
-
-
 delete cases;
-// delete contacts;
-// delete Accounts ; 
 
-    
+// list <Account> Accounts = [ SELECT id FROM Account];
+// delete Accounts;
+
+// list <Contact> Contacts = [ SELECT id FROM Contact];
+// delete Contacts;

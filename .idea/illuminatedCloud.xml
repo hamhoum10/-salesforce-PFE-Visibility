@@ -4,10 +4,10 @@
     <option name="connections">
       <list>
         <IlluminatedCloudConnection>
-          <option name="connectionName" value="pfe" />
+          <option name="connectionName" value="agentforce" />
           <option name="connectionType" value="OAUTH" />
           <option name="defaultModuleName" value="salesforce" />
-          <option name="offlineSymbolTablePath" value="$PROJECT_DIR$/IlluminatedCloud/pfe/OfflineSymbolTable.zip" />
+          <option name="offlineSymbolTablePath" value="$PROJECT_DIR$/IlluminatedCloud/agentforce/OfflineSymbolTable.zip" />
         </IlluminatedCloudConnection>
       </list>
     </option>

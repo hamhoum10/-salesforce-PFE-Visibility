@@ -1,0 +1,21 @@
+{
+  "required" : [ "externalOrderId", "refundStatus" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "externalOrderId" : {
+      "title" : "externalOrderId",
+      "description" : "ask  externalOrderId  ",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : true
+    },
+    "refundStatus" : {
+      "title" : "refundStatus",
+      "description" : "ask for refundStatus",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

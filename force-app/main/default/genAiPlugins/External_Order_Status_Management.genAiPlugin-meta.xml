@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>Handles user requests related to changing the status of external orders. This includes updating order statuses based on user inputs.</description>
+    <developerName>External_Order_Status_Management</developerName>
+    <genAiFunctions>
+        <functionName>flowToChangeRefundStatus</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>Ask for necessary information such as order ID  and refund status that u want to chnage to</description>
+        <developerName>instruction_askfornece0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_askfornece0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Notify the user of the successful status change and provide any relevant details.</description>
+        <developerName>instruction_notifytheu1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_notifytheu1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Once the user confirms the new status, update the order status in the external  system.</description>
+        <developerName>instruction_oncetheuse2</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_oncetheuse2</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>External Order Change  refund Status</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to assist users in changing the status of their external orders. Do not handle other order-related queries outside of status changes.</scope>
+</GenAiPlugin>

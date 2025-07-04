@@ -1,0 +1,54 @@
+<template>
+    <lightning-card title="External Order Management" icon-name="standard:orders">
+        <div class="slds-m-around_medium">
+            <lightning-input label="Customer Email" type="email" value={customerEmail} onchange={handleEmailChange}
+                placeholder="Enter customer email"></lightning-input>
+            <lightning-button label="Fetch Orders" onclick={handleFetchOrders} variant="brand"
+                class="slds-m-top_small">
+            </lightning-button>
+
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={ordersFound}>
+                <div class="slds-m-top_large">
+                    <h2>Orders:</h2>
+                    <lightning-datatable
+                        key-field="orderId"
+                        data={pagedOrders}
+                        columns={columns}
+                        onrowaction={handleRowAction}
+                        hide-checkbox-column="true"
+                        sorted-by={sortBy}
+                        sorted-direction={sortDirection}
+                        onsort={handleSort}
+                    >
+                    </lightning-datatable>
+                    <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+                        <lightning-button label="Previous" icon-name="utility:chevronleft" onclick={handlePreviousPage} disabled={isFirstPage} class="slds-m-right_small"></lightning-button>
+                        <span class="slds-text-heading_small">Page {currentPage} of {totalPages}</span>
+                        <lightning-button label="Next" icon-name="utility:chevronright" icon-position="right" onclick={handleNextPage} disabled={isLastPage} class="slds-m-left_small"></lightning-button>
+                    </div>
+                    <div class="slds-m-top_small slds-text-align_center">
+                        Items per page:
+                        <select onchange={handleItemsPerPageChange} class="slds-select slds-input_small" style="width: auto; display: inline-block;">
+                            <option value="5" selected>5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </div>
+            </template>
+            <template if:true={noOrdersFound}>
+                <p class="slds-text-align_center slds-m-top_large">No orders found for this email.</p>
+            </template>
+            <template if:true={hasError}>
+                <p class="slds-text-color_destructive slds-text-align_center slds-m-top_large">An error occurred while
+                    fetching orders: {errorMessage}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

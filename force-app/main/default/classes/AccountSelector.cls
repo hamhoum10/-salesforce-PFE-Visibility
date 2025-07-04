@@ -5,10 +5,10 @@ public with sharing class AccountSelector {
         }
         try {
             return [
-                SELECT Id, External_id__c, PersonContactId
+                SELECT Id, External_id__pc, PersonContactId
                 FROM Account
                 WHERE External_id__c = :externalId
-                WITH SECURITY_ENFORCED
+
                 LIMIT 1
             ];
         } catch (System.QueryException e) {

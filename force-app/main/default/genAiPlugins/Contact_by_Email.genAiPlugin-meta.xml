@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <canEscalate>false</canEscalate>
+    <description>Handles user requests to get contact information via email. This topic addresses inquiries related to obtaining contact details through email communication.</description>
+    <developerName>Contact_by_Email</developerName>
+    <genAiFunctions>
+        <functionName>Get_Account_And_Contact</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>If a user requests contact information, confirm they want it sent via email.</description>
+        <developerName>instruction_ifauserreq0</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_ifauserreq0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Gather the user&apos;s email address if not already provided.</description>
+        <developerName>instruction_gathertheu1</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_gathertheu1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Verify the email address with the user for accuracy.</description>
+        <developerName>instruction_verifythee2</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_verifythee2</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Send the contact information to the provided email address.</description>
+        <developerName>instruction_sendthecon3</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_sendthecon3</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>If the user does not provide an email address, ask if they would like to escalate to an agent for further assistance.</description>
+        <developerName>instruction_iftheuserd4</developerName>
+        <language xsi:nil="true"/>
+        <masterLabel>instruction_iftheuserd4</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>Contact by Email</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to assist users in retrieving contact information by email. Do not provide information or assistance on other communication methods or unrelated issues.</scope>
+</GenAiPlugin>

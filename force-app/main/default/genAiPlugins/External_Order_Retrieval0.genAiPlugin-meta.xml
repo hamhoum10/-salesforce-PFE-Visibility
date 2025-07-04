@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>This topic handles user requests related to retrieving external orders. It encompasses actions required to look up and provide details of external orders.</description>
+    <developerName>External_Order_Retrieval0</developerName>
+    <genAiFunctions>
+        <functionName>Get_Orders_by_Email_Person_Account</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>Gather as much information as possible from the user by asking clarifying questions.</description>
+        <developerName>instruction_gatherasmu0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_gatherasmu0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>If a user does not have their order number, ask if they&apos;d like to escalate to an agent or create a case.</description>
+        <developerName>instruction_ifauserdoe1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_ifauserdoe1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Offer both options to look up an order by either email address or order ID.</description>
+        <developerName>instruction_offerbotho2</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_offerbotho2</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>When searching the order database, include relevant details provided by the user in the search query.</description>
+        <developerName>instruction_whensearch3</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_whensearch3</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>External Order Retrieval</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to assist users in retrieving information about their external orders. Do not attempt to handle other types of inquiries or provide unrelated information.</scope>
+</GenAiPlugin>

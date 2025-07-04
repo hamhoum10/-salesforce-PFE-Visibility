@@ -1,0 +1,14 @@
+{
+  "required" : [ "name" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "name" : {
+      "title" : "name",
+      "description" : "name of user + the word 'el7ob'",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

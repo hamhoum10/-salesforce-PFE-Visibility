@@ -1,0 +1,21 @@
+{
+  "required" : [ "caseId", "email" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "caseId" : {
+      "title" : "caseId",
+      "description" : "ask user for caseId",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : true
+    },
+    "email" : {
+      "title" : "email",
+      "description" : "ask user for email",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : true
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

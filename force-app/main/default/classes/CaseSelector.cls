@@ -8,7 +8,7 @@ public with sharing class CaseSelector {
                 SELECT Id, AccountId, ContactId
                 FROM Case
                 WHERE Id = :caseId
-                WITH SECURITY_ENFORCED
+
                 LIMIT 1
             ];
         } catch (System.QueryException e) {

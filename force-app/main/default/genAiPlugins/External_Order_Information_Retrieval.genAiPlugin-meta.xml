@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <canEscalate>false</canEscalate>
+    <description>Retrieve order information using the customer&apos;s email address. This topic handles requests related to fetching details of orders placed by the user.</description>
+    <developerName>External_Order_Information_Retrieval</developerName>
+    <genAiFunctions>
+        <functionName>getExternalOrderrr</functionName>
+    </genAiFunctions>
+    <genAiPluginInstructions>
+        <description>Ask the user for their email address to look up the order information.</description>
+        <developerName>instruction_asktheuser0</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_asktheuser0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Provide the order details retrieved using the email address to the user.</description>
+        <developerName>instruction_providethe1</developerName>
+        <language>en_US</language>
+        <masterLabel>instruction_providethe1</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>External Order Information Retrieval</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope>Your job is only to retrieve and provide order information using the customer&apos;s email address. Do not attempt to handle other types of inquiries or actions unrelated to order information retrieval.</scope>
+</GenAiPlugin>

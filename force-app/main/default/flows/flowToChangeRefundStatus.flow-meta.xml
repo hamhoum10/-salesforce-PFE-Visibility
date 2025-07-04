@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>change_refund_status</name>
+        <label>change refund  status</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <actionName>refundAgent</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>externalOrderId</name>
+            <value>
+                <elementReference>externalIdRefund</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>refundStatus</name>
+            <value>
+                <elementReference>refundStatus</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>refundAgent</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>a flow to change the status of refund status</description>
+    <environments>Default</environments>
+    <interviewLabel>flowToChangeRefundStatus {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>flowToChangeRefundStatus</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>change_refund_status</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>external ID Order</description>
+        <name>externalIdRefund</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>user write the refund status</description>
+        <name>refundStatus</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>statusoutput</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

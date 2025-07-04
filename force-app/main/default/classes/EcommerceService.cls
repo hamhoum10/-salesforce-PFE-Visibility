@@ -4,7 +4,7 @@ public with sharing class EcommerceService implements ICustomerService {
     private static final String ENDPOINT_SOBJECT = 'https://pwcsandbox53-dev-ed.develop.my.salesforce.com/services/data/v47.0/sobjects/Account/';
 
 
-    public void getAccountAndContact(Id caseId, String email) {
+    public static void getAccountAndContact(Id caseId, String email) {
         try {
             String accessToken = authenticate();
             if (accessToken != null) {
@@ -15,7 +15,7 @@ public with sharing class EcommerceService implements ICustomerService {
         }
     }
 
-    public String authenticate() {
+    public static String authenticate() {
         String clientId = System.Label.OAuth_Client_ID;
         String clientSecret = System.Label.OAuth_Client_Secret;
         String username = System.Label.OAuth_Username;
@@ -52,7 +52,7 @@ public with sharing class EcommerceService implements ICustomerService {
         }
     }
 
-    public void callEcommerceApi(Id caseId, String email, String accessToken) {
+    public static void callEcommerceApi(Id caseId, String email, String accessToken) {
         String query = 'SELECT+Id+FROM+Account+WHERE+PersonEmail=\'' + EncodingUtil.urlEncode(email, 'UTF-8') + '\'';
         String endpoint = ENDPOINT_QUERY + '?q=' + query;
 
@@ -96,7 +96,7 @@ public with sharing class EcommerceService implements ICustomerService {
         }
     }
 
-    public Map<String, Object> getAccountDetailsById(String accountId, String accessToken) {
+    public static Map<String, Object> getAccountDetailsById(String accountId, String accessToken) {
         String endpoint = ENDPOINT_SOBJECT + accountId;
         HttpRequest request = new HttpRequest();
         request.setEndpoint(endpoint);
@@ -122,7 +122,7 @@ public with sharing class EcommerceService implements ICustomerService {
         }
     }
 
-    public void upsertAccountAndContact(Id caseId, Map<String, Object> data) {
+    public static void upsertAccountAndContact(Id caseId, Map<String, Object> data) {
         try {
             String externalId = (String) data.get('Id');
             if(String.isBlank(externalId)){
@@ -142,13 +142,29 @@ public with sharing class EcommerceService implements ICustomerService {
                 update acc;
                 System.debug('Person Account updated ' + acc.Id);
             } else {
-                acc = new Account();
+                
+                // Get the default record type for Personal Accounts
+                RecordType personalRt = [
+                    SELECT Id 
+                    FROM RecordType 
+                    WHERE SObjectType = 'Account' 
+                    AND IsPersonType = true 
+                    LIMIT 1
+                ];
+                ind = new Individual();
+                 ind.LastName = (String) data.get('LastName');
+                ind.FirstName = (String) data.get('FirstName');
+                insert ind;
+                System.debug('Person Individual inserted ' + ind.Id);
+
+                acc = new Account();  
+                acc.RecordTypeId = personalRt.Id;
                 acc.LastName = (String) data.get('LastName');
                 acc.FirstName = (String) data.get('FirstName');
                 acc.PersonEmail = (String) data.get('PersonEmail');
                 acc.Phone = (String) data.get('Phone');
                 acc.External_id__c = externalId;
-
+                acc.PersonIndividua
                 insert acc;
                 System.debug('Person Account inserted ' + acc.Id);
             }

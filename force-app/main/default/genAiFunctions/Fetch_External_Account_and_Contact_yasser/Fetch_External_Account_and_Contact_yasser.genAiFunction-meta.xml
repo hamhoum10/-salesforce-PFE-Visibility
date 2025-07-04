@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>get account data</description>
+    <invocationTarget>getExternalAccountAgent</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <masterLabel>Fetch External Account and Contact</masterLabel>
+    <progressIndicatorMessage>geting data</progressIndicatorMessage>
+</GenAiFunction>

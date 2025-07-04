@@ -1,0 +1,70 @@
+<!-- unlinkedCasesManager.html -->
+<template>
+    <lightning-card title="Unlinked Cases Manager" icon-name="standard:case">
+        <div class="slds-m-around_medium">
+            <template if:true={cases}>
+                <template if:true={cases.length}>
+                    <div class="slds-scrollable_y" style="max-height: 400px;">
+                        <lightning-datatable
+                            key-field="Id"
+                            data={cases}
+                            columns={columns}
+                            hide-checkbox-column="true"
+                            onrowaction={handleRowAction}>
+                        </lightning-datatable>
+                    </div>
+                </template>
+                <template if:false={cases.length}>
+                    <p>No cases found without an associated account.</p>
+                </template>
+            </template>
+            <template if:true={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+        </div>
+
+        <!-- Modal for linking account -->
+        <template if:true={showLinkAccountModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeLinkAccountModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close" variant="inverse" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Link Account to Case: {selectedCaseNumber}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- Wrap lightning-input-field in lightning-record-edit-form for lookup functionality -->
+                        <lightning-record-edit-form
+                            record-id={selectedCaseId}
+                            object-api-name="Case"
+                            onsuccess={handleFormSuccess}
+                            onerror={handleFormError}>
+                            <lightning-input-field
+                                field-name="AccountId"
+                                value={selectedAccountId}
+                                onchange={handleAccountSelection}>
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeLinkAccountModal}>Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={handleLinkAccountSave} disabled={isSaving}>
+                            <template if:true={isSaving}>
+                                <lightning-spinner alternative-text="Saving" size="small"></lightning-spinner>
+                            </template>
+                            Link Account
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>
