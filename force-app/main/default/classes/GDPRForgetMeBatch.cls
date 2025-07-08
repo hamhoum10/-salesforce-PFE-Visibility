@@ -1,4 +1,11 @@
 global class GDPRForgetMeBatch implements Database.Batchable<SObject>, Database.Stateful {
+    //for folow
+      @InvocableMethod(label='Start GDPR Forget Me Batch' description='Initiates the GDPRForgetMeBatch Apex batch job.')
+    public static void startGDPRBatch() {
+        GDPRForgetMeBatch forgetMeBatch = new GDPRForgetMeBatch();
+        Database.executeBatch(forgetMeBatch);
+    }
+    //
     private static final String MASK_VALUE = 'ff';
     private Map<String, List<GDPR_Field_Cleanup__mdt>> metadataByObject;
     private List<String> objectNames;

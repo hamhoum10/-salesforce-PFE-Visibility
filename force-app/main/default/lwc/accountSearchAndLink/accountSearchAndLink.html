@@ -1,0 +1,27 @@
+<!-- accountSearchAndLink.html -->
+<template>
+    <lightning-input label="Search Account" onchange={handleSearchTermChange} value={searchTerm} class="slds-m-bottom_small"></lightning-input>
+    <lightning-button label="Search" onclick={searchAccounts} variant="brand"></lightning-button>
+
+    <!-- Conditional rendering for displaying search results -->
+    <template lwc:if={accounts.length}>
+        <p class="slds-text-heading_small slds-m-top_medium">Select an Account:</p>
+        <lightning-radio-group name="accountOptions"
+                               label="Account List"
+                               options={accountOptions}
+                               value={selectedAccountId}
+                               onchange={handleAccountSelection}
+                               type="vertical">
+        </lightning-radio-group>
+        <!-- Updated disabled attribute to use the new getter -->
+        <lightning-button label="Link Selected Account" onclick={linkAccount} variant="brand" class="slds-m-top_medium" disabled={isLinkButtonDisabled}></lightning-button>
+    </template>
+    <!-- Conditional rendering for no accounts found after a search, using the new getter -->
+    <template lwc:if={noAccountsFoundWithSearchTerm}>
+        <p class="slds-m-top_medium">No accounts found for "{searchTerm}".</p>
+    </template>
+    <!-- Conditional rendering for general errors -->
+    <template lwc:if={error}>
+        <p class="slds-text-color_error slds-m-top_small">Error: {error}</p>
+    </template>
+</template>

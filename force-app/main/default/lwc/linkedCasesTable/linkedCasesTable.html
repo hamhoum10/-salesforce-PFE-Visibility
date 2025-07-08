@@ -1,0 +1,24 @@
+<!-- linkedCasesTable.html -->
+<template>
+    <lightning-card title="Linked Cases">
+        <div class="slds-p-around_medium">
+            <!-- Conditional rendering for cases data -->
+            <template lwc:if={cases.length}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={cases}
+                    columns={columns}
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+            <!-- Conditional rendering for no linked cases found, using a getter from JS -->
+            <template lwc:if={noLinkedCasesFound}>
+                <p>No linked cases found.</p>
+            </template>
+            <!-- Conditional rendering for error messages -->
+            <template lwc:if={error}>
+                <p class="slds-text-color_error">Error loading linked cases: {error}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

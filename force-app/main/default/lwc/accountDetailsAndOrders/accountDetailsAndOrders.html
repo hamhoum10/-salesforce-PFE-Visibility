@@ -1,0 +1,33 @@
+<!-- accountDetailsAndOrders.html -->
+<template>
+    <!-- Conditional rendering for account details -->
+    <template lwc:if={accountDetails}>
+        <h3>Account Details</h3>
+        <p><strong>Name:</strong> {accountDetails.Name}</p>
+        <p><strong>Email:</strong> {accountDetails.PersonEmail}</p>
+        <p><strong>Phone:</strong> {accountDetails.Phone}</p>
+    </template>
+    <!-- Conditional rendering for account details error -->
+    <template lwc:if={accountDetailsError}>
+        <p class="slds-text-color_error">Error loading account details: {accountDetailsError}</p>
+    </template>
+
+    <h3 class="slds-m-top_medium">Orders</h3>
+    <!-- Conditional rendering for orders data -->
+    <template lwc:if={orders.length}>
+        <lightning-datatable
+            key-field="orderId"
+            data={orders}
+            columns={orderColumns}
+            onrowaction={handleOrderRowAction}>
+        </lightning-datatable>
+    </template>
+    <!-- Conditional rendering for no orders found, using the new getter -->
+    <template lwc:if={noOrdersFound}>
+        <p>No orders found for this account.</p>
+    </template>
+    <!-- Conditional rendering for orders error -->
+    <template lwc:if={ordersError}>
+        <p class="slds-text-color_error">Error loading orders: {ordersError}</p>
+    </template>
+</template>

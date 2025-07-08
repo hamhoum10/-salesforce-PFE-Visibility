@@ -390,5 +390,14 @@
     <types>
         <name>WebLink</name>
     </types>
+    <types>
+        <members>GDPR</members>
+        <name>FlowDefinition</name>
+    </types>
+    <types>
+        <members>orderLookup</members>
+        <members>unlinkedCasesManager</members>
+        <name>LightningComponentBundle</name>
+    </types>
     <version>63.0</version>
 </Package>

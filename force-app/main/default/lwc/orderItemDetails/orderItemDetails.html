@@ -1,0 +1,12 @@
+<template>
+    <template lwc:if={processedOrderItems.length}>
+        <lightning-datatable
+            key-field="orderItemId"
+            data={processedOrderItems}
+            columns={columns}>
+        </lightning-datatable>
+    </template>
+    <template lwc:if={noOrderItemsToDisplay}>
+        <p>No order items to display.</p>
+    </template>
+</template>

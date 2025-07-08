@@ -132,6 +132,7 @@ public with sharing class EcommerceService implements ICustomerService {
 
             List<Account> existingAccounts = AccountSelector.selectByExternalId(externalId);
             Account acc;
+            Individual ind;
             Boolean isUpdate = !existingAccounts.isEmpty();
 
             if (isUpdate) {
@@ -164,7 +165,7 @@ public with sharing class EcommerceService implements ICustomerService {
                 acc.PersonEmail = (String) data.get('PersonEmail');
                 acc.Phone = (String) data.get('Phone');
                 acc.External_id__c = externalId;
-                acc.PersonIndividua
+                acc.PersonIndividualId = ind.Id ; 
                 insert acc;
                 System.debug('Person Account inserted ' + acc.Id);
             }

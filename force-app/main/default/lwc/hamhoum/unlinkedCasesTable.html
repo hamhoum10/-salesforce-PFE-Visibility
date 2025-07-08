@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="Unlinked Cases">
+        <div class="slds-p-around_medium">
+            <!-- Conditional rendering for cases data -->
+            <template lwc:if={cases.length}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={cases}
+                    columns={columns}
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+            <!-- Conditional rendering for no cases found, using a getter from JS -->
+            <template lwc:if={noCasesFound}>
+                <p>No unlinked cases found.</p>
+            </template>
+            <!-- Conditional rendering for error messages -->
+            <template lwc:if={error}>
+                <p class="slds-text-color_error">Error loading unlinked cases: {error}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,4 +1,5 @@
 public with sharing class omri {
+    
 
     public static final String AUTH_URL ='https://login.salesforce.com/services/oauth2/token';
     public static final String EXTERNAL_INSTANCE_URL = 'https://pwcsandbox53-dev-ed.develop.my.salesforce.com';
@@ -64,7 +65,6 @@ public with sharing class omri {
             this.records = records;
         }
     }
-    
 
     /**
      * Updates the refund status of an external order.
@@ -160,7 +160,7 @@ public with sharing class omri {
      * @param email The email address to search for orders.
      * @return A list of OrderData wrapper objects containing comprehensive order details.
      */
-    @AuraEnabled(cacheable=false) // Set to true because this method only reads data
+    @AuraEnabled(cacheable=true) // Set to true because this method only reads data
     public static List<OrderData> getOrdersAndDetailsByEmail(String email) {
         List<OrderData> resultOrders = new List<OrderData>();
 
@@ -590,6 +590,7 @@ public with sharing class omri {
      * Authenticates with the Salesforce OAuth endpoint using credentials from Custom Labels.
      * @return The access token string if authentication is successful, null otherwise.
      */
+    @AuraEnabled(cacheable=false)
     public static String authenticate() {
         HttpRequest req = new HttpRequest();
         req.setEndpoint(AUTH_URL);
@@ -632,6 +633,7 @@ public with sharing class omri {
      * @param accessToken The OAuth access token.
      * @return The JSON string of the record, or null if not found or an error occurs.
      */
+     @AuraEnabled(cacheable=false)
     public static String getExternalRecordJsonById(String endpointBase, String recordId, String accessToken) {
         if(String.isBlank(recordId) || String.isBlank(accessToken)){
             System.debug('Missing recordId or accessToken for getExternalRecordJsonById call.');
