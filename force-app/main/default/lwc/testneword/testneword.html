@@ -1,0 +1,89 @@
+<template>
+    <lightning-card title="External Order Management" icon-name="standard:orders">
+        <div class="slds-m-around_medium">
+            <lightning-input label="Customer Email" type="email" value={customerEmail} onchange={handleEmailChange}
+                placeholder="Enter customer email"></lightning-input>
+            <lightning-button label="Fetch Orders" onclick={handleFetchOrders} variant="brand" class="slds-m-top_small">
+            </lightning-button>
+
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={ordersFound}>
+                <div class="slds-m-top_large">
+                    <h2>Orders:</h2>
+                    <template for:each={orders} for:item="orderItem">
+                        <lightning-accordion key={orderItem.orderId} allow-multiple-sections-open>
+                            <lightning-accordion-section name={orderItem.orderId} label={orderItem.orderId}>
+                                <p><strong>Order ID:</strong> {orderItem.orderId}</p>
+                                <p><strong>Account ID:</strong> {orderItem.accountId}</p>
+                                <p><strong>Order Status:</strong> {orderItem.orderDetails.Status}</p>
+                                <p><strong>Effective Date:</strong> {orderItem.orderDetails.EffectiveDate}</p>
+
+                                <div class="slds-m-top_small">
+                                    <h3>Account Details:</h3>
+                                    <p><strong>Name:</strong> {orderItem.accountDetails.Name}</p>
+                                    <p><strong>Phone:</strong> {orderItem.accountDetails.Phone}</p>
+                                </div>
+
+                                <div class="slds-m-top_small">
+                                    <h3>Contact Details:</h3>
+                                    <template if:true={orderItem.contactDetails}>
+                                        <p><strong>Name:</strong> {orderItem.contactDetails.Name}</p>
+                                        <p><strong>Email:</strong> {orderItem.contactDetails.Email}</p>
+                                    </template>
+                                    <template if:false={orderItem.contactDetails}>
+                                        <p>No contact details found.</p>
+                                    </template>
+                                </div>
+
+                                <div class="slds-m-top_small">
+                                    <h3>Order Items:</h3>
+                                    <template if:true={orderItem.orderItems}>
+                                        <template for:each={orderItem.orderItems} for:item="item">
+                                            <div key={item.orderItemId} class="slds-box slds-m-bottom_x-small">
+                                                <p><strong>Item ID:</strong> {item.orderItemId}</p>
+                                                <p><strong>Product Name:</strong> {item.productDetails.Name}</p>
+                                                <p><strong>Quantity:</strong> {item.quantity}</p>
+                                                <p><strong>Unit Price:</strong> {item.unitPrice}</p>
+                                            </div>
+                                        </template>
+                                    </template>
+                                    <template if:false={orderItem.orderItems}>
+                                        <p>No order items found.</p>
+                                    </template>
+                                </div>
+
+                                <div class="slds-m-top_medium">
+                                    <lightning-combobox
+                                        label="Refund Status"
+                                        value={orderItem.selectedRefundStatus}
+                                        placeholder="Select Refund Status"
+                                        options={refundStatusOptions}
+                                        onchange={handleRefundStatusChange}
+                                        data-order-id={orderItem.orderId}
+                                    ></lightning-combobox>
+                                    <lightning-button label="Update Refund Status"
+                                        onclick={handleUpdateRefundStatus}
+                                        data-order-id={orderItem.orderId}
+                                        data-status={orderItem.selectedRefundStatus}
+                                        variant="neutral" class="slds-m-top_small"></lightning-button>
+                                </div>
+
+                            </lightning-accordion-section>
+                        </lightning-accordion>
+                    </template>
+                </div>
+            </template>
+            <template if:true={noOrdersFound}>
+                <p class="slds-text-align_center slds-m-top_large">No orders found for this email.</p>
+            </template>
+            <template if:true={hasError}>
+                <p class="slds-text-color_destructive slds-text-align_center slds-m-top_large">An error occurred while fetching orders: {errorMessage}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

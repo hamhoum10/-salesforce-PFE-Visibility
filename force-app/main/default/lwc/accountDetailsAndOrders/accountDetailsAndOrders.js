@@ -1,8 +1,8 @@
 // AccountDetailsAndOrders.js
-import { LightningElement, api, track } from 'lwc'; // Removed 'wire' as it's not directly used in this component's @wire
+import { LightningElement, api, track } from 'lwc';
 import getOrdersAndDetailsByEmail from '@salesforce/apex/omri.getOrdersAndDetailsByEmail';
 import reorderOrder from '@salesforce/apex/omri.reorderOrder';
-import getExternalRecordJsonById from '@salesforce/apex/omri.getExternalRecordJsonById';
+import getAccountById from '@salesforce/apex/omri.getAccountById';
 import authenticate from '@salesforce/apex/omri.authenticate';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -54,15 +54,19 @@ export default class AccountDetailsAndOrders extends LightningElement {
             }
 
             // Construct the API URL for fetching account details
+            // Ensure the URL is correct for your Salesforce instance and API version
             const accountApiUrl = 'https://pwcsandbox53-dev-ed.develop.my.salesforce.com/services/data/v63.0/sobjects/Account/';
             // Fetch external account record JSON by ID
-            const accountJson = await getExternalRecordJsonById({ externalInstanceUrl: accountApiUrl, recordId: this.accountId, accessToken: this.accessToken });
+            // Make sure the fields being queried by getExternalRecordJsonById include PersonEmail
+            const accountJson = await getAccountById({ recordId: this.accountId });
+            // await getExternalRecordJsonById({ externalInstanceUrl: accountApiUrl, recordId: this.accountId, accessToken: this.accessToken });
 
             if (accountJson) {
-                this.accountDetails = JSON.parse(accountJson); // Parse the JSON string to an object
+                this.accountDetails = accountJson; // Parse the JSON string to an object
                 this.accountDetailsError = undefined; // Clear any previous account details error
 
-                const accountEmail = this.accountDetails.PersonEmail; // Get email from account details
+                // Ensure PersonEmail is correctly retrieved and exists
+                const accountEmail = this.accountDetails.PersonEmail;
                 if (accountEmail) {
                     // Fetch orders based on the account email
                     const orderDataList = await getOrdersAndDetailsByEmail({ email: accountEmail });
@@ -75,22 +79,22 @@ export default class AccountDetailsAndOrders extends LightningElement {
                     this.ordersError = undefined; // Clear any previous orders error
                 } else {
                     this.orders = []; // No orders if no email
-                    this.ordersError = 'No email found for this account to fetch orders.';
-                    this.dispatchEvent(
+                    this.ordersError = 'No email found for this account to fetch orders. Please ensure PersonEmail is populated for the account.';
+                    this0.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Info',
-                            message: 'No email found for this account to fetch orders.',
+                            message: 'No email found for this account to fetch orders. Please ensure PersonEmail is populated for the account.',
                             variant: 'info',
                         }),
                     );
                 }
             } else {
                 this.accountDetails = undefined; // Clear account details if not found
-                this.accountDetailsError = 'Failed to load account details.';
+                this.accountDetailsError = 'Failed to load account details. Account with ID ' + this.accountId + ' might not exist or data is inaccessible.';
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error',
-                        message: 'Failed to load account details.',
+                        message: 'Failed to load account details. Account with ID ' + this.accountId + ' might not exist or data is inaccessible.',
                         variant: 'error',
                     }),
                 );
@@ -103,7 +107,7 @@ export default class AccountDetailsAndOrders extends LightningElement {
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error',
-                    message: `Error loading data: ${this.accountDetailsError || this.ordersError}`,
+                    message: `Error loading data: ${this.accountDetailsError || this.ordersError}. Please check Apex logs for getExternalRecordJsonById and getOrdersAndDetailsByEmail.`,
                     variant: 'error',
                 }),
             );

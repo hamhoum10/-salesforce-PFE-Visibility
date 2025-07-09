@@ -1,0 +1,36 @@
+.chat-window {
+    border: 1px solid var(--lwc-colorBorder);
+    border-radius: var(--lwc-borderRadiusMedium);
+    padding: var(--lwc-spacingXxSmall);
+    height: 300px; /* Fixed height for scrollable area */
+    background-color: var(--lwc-colorBackground);
+    display: flex; /* Use flexbox for messages */
+    flex-direction: column; /* Stack messages vertically */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.message-bubble {
+    padding: var(--lwc-spacingXSmall) var(--lwc-spacingSmall);
+    margin-bottom: var(--lwc-spacingXSmall);
+    border-radius: var(--lwc-borderRadiusMedium);
+    max-width: 80%; /* Limit bubble width */
+    word-wrap: break-word; /* Ensure long words wrap */
+    flex-shrink: 0; /* Prevent messages from shrinking */
+}
+
+.user-message {
+    background-color: var(--lwc-brandColor);
+    color: var(--lwc-colorTextInverse);
+    margin-left: auto; /* Align to the right */
+}
+
+.bot-message {
+    background-color: var(--lwc-colorBackgroundHighlight);
+    color: var(--lwc-colorTextDefault);
+    margin-right: auto; /* Align to the left */
+}
+
+.slds-text-heading_small {
+    font-size: 0.875rem; /* Make the 'Assisting for' text a bit smaller */
+    color: var(--lwc-colorTextWeak);
+}
