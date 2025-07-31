@@ -3,14 +3,8 @@
     <apiVersion>64.0</apiVersion>
    <isExposed>true</isExposed>
     <targets>
-        <target>lightning__RecordPage</target>
         <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
-        <target>lightning__UtilityBar</target> </targets>
-    <targetConfigs>
-        <targetConfig targets="lightning__RecordPage">
-            <property name="recordId" type="String" label="Record Id" description="Automatically binds the ID of the current record." />
-            <property name="objectApiName" type="String" label="Object API Name" description="Automatically binds the API name of the current object." />
-        </targetConfig>
-    </targetConfigs>
+    </targets>
 </LightningComponentBundle>

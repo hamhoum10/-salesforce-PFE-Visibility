@@ -1,36 +1,40 @@
-.chat-window {
-    border: 1px solid var(--lwc-colorBorder);
-    border-radius: var(--lwc-borderRadiusMedium);
-    padding: var(--lwc-spacingXxSmall);
-    height: 300px; /* Fixed height for scrollable area */
-    background-color: var(--lwc-colorBackground);
-    display: flex; /* Use flexbox for messages */
-    flex-direction: column; /* Stack messages vertically */
-    overflow-y: auto; /* Enable vertical scrolling */
-}
-
-.message-bubble {
-    padding: var(--lwc-spacingXSmall) var(--lwc-spacingSmall);
-    margin-bottom: var(--lwc-spacingXSmall);
-    border-radius: var(--lwc-borderRadiusMedium);
-    max-width: 80%; /* Limit bubble width */
-    word-wrap: break-word; /* Ensure long words wrap */
-    flex-shrink: 0; /* Prevent messages from shrinking */
+.chat-history {
+    height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f8f8f8;
 }
 
 .user-message {
-    background-color: var(--lwc-brandColor);
-    color: var(--lwc-colorTextInverse);
-    margin-left: auto; /* Align to the right */
+    text-align: right;
+    background-color: #e0f2fe; /* Light blue */
+    padding: 8px 12px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
+    float: right;
+    clear: both;
 }
 
-.bot-message {
-    background-color: var(--lwc-colorBackgroundHighlight);
-    color: var(--lwc-colorTextDefault);
-    margin-right: auto; /* Align to the left */
+.agent-message {
+    text-align: left;
+    background-color: #e6ffe6; /* Light green */
+    padding: 8px 12px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
+    float: left;
+    clear: both;
 }
 
-.slds-text-heading_small {
-    font-size: 0.875rem; /* Make the 'Assisting for' text a bit smaller */
-    color: var(--lwc-colorTextWeak);
+.error-message {
+    background-color: #ffe6e6; /* Light red */
+    color: #cc0000;
 }

@@ -1,48 +1,133 @@
-// AccountDetailsAndOrders.js
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import getOrdersAndDetailsByEmail from '@salesforce/apex/omri.getOrdersAndDetailsByEmail';
 import reorderOrder from '@salesforce/apex/omri.reorderOrder';
 import getAccountById from '@salesforce/apex/omri.getAccountById';
 import authenticate from '@salesforce/apex/omri.authenticate';
+import deleteExternalOrder from '@salesforce/apex/omri.deleteExternalOrder';
+import refundStatus from '@salesforce/apex/omri.refundStatus';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { getRecord } from 'lightning/uiRecordApi';
+import ACCOUNT_ID_FIELD from '@salesforce/schema/Case.AccountId';
 
 const ORDER_COLUMNS = [
-    { label: 'Order ID', fieldName: 'orderId', type: 'button', typeAttributes: { label: { fieldName: 'orderId' }, name: 'view_order_items', variant: 'base' } },
-    { label: 'Status', fieldName: 'Order_Status__c', type: 'text' },
-    { label: 'Effective Date', fieldName: 'EffectiveDate', type: 'date' },
+    { label: 'Order ID', fieldName: 'orderId', type: 'button', typeAttributes: { label: { fieldName: 'orderId' }, name: 'view_order_items', variant: 'base' }, sortable: true },
+    { label: 'Order Date', fieldName: 'EffectiveDate', type: 'date', sortable: true },
+     { label: 'Total Amount', fieldName: 'TotalAmount', type: 'currency', sortable: true },
+    { label: 'Refund Status', fieldName: 'Refund_Status__c', type: 'text' },
     {
-        type: 'action',
-        typeAttributes: { rowActions: [{ label: 'Reorder', name: 'reorder_order' }] },
+        type: 'button',
+        fixedWidth: 110,
+        typeAttributes: {
+            label: 'Reorder',
+            name: 'reorder_order',
+            title: 'Reorder',
+            variant: 'brand',
+            disabled: false
+        }
     },
+    {
+        type: 'button',
+        fixedWidth: 110,
+        typeAttributes: {
+            label: 'Delete',
+            name: 'delete_order',
+            title: 'Delete Order',
+            variant: 'destructive',
+            disabled: false
+        }
+    },
+    {
+        type: 'button',
+        fixedWidth: 110,
+        typeAttributes: {
+            label: 'Refund',
+            name: 'refund_order',
+            title: 'Refund Order',
+            variant: 'neutral',
+            disabled: false
+        }
+    },
+    {
+        type: 'button',
+        fixedWidth: 140,
+        typeAttributes: {
+            label: 'Partial Refund',
+            name: 'partial_refund_order',
+            title: 'Partial Refund Order',
+            variant: 'neutral',
+            disabled: false
+        }
+    }
 ];
 
 export default class AccountDetailsAndOrders extends LightningElement {
-    @api accountId; // Public property to receive account ID
-    @track accountDetails; // Reactive property for account details
-    @track accountDetailsError; // Reactive property for account details error
-    @track orders = []; // Reactive property for orders list
-    @track ordersError; // Reactive property for orders error
-    orderColumns = ORDER_COLUMNS; // Columns for the orders datatable
-    @track accessToken; // Reactive property for authentication token
+    @api recordId; // Case ID from the record page
 
-    // Lifecycle hook: called when the component is inserted into the DOM
-    connectedCallback() {
-        this.fetchAccountAndOrders();
+    @track accountDetails;
+    @track accountDetailsError;
+    @track orders = [];
+    @track ordersError;
+    orderColumns = ORDER_COLUMNS;
+    @track accessToken;
+
+    @track isModalOpen = false; // Controls visibility of the modal
+    @track modalOrderItems = []; // Data for the OrderItemDetails component in the modal
+    @track selectedOrderId; // To display in the modal header
+
+    @track isLoading = true; // Add loading state
+
+    @track sortBy = 'orderId';
+    @track sortDirection = 'asc';
+
+    _accountId; // Private property to hold the actual Account ID
+
+    @wire(getRecord, { recordId: '$recordId', fields: [ACCOUNT_ID_FIELD] })
+    wiredCase({ error, data }) {
+        if (data) {
+            this._accountId = data.fields.AccountId.value;
+            if (this._accountId) {
+                this.fetchAccountAndOrders();
+            } else {
+                this.accountDetails = undefined;
+                this.orders = [];
+                this.accountDetailsError = 'This Case is not linked to an Account.';
+                this.ordersError = 'This Case is not linked to an Account.';
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Info',
+                        message: 'This Case is not linked to an Account, so account details and orders cannot be displayed.',
+                        variant: 'info',
+                    }),
+                );
+            }
+        } else if (error) {
+            this.accountDetailsError = error.body ? error.body.message : error.message;
+            this.ordersError = error.body ? error.body.message : error.message;
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error loading Case data',
+                    message: this.accountDetailsError,
+                    variant: 'error',
+                }),
+            );
+        }
     }
 
-    // Getter to determine if no orders are found, simplifying HTML logic
-    get noOrdersFound() {
-        return this.orders.length === 0;
-    }
-
-    // Asynchronously fetches account details and associated orders
     async fetchAccountAndOrders() {
+        this.isLoading = true; // Start loading
+        if (!this._accountId) {
+            this.accountDetailsError = 'No Account ID available to fetch details and orders.';
+            this.ordersError = 'No Account ID available to fetch details and orders.';
+            this.isLoading = false; // Stop loading
+            return;
+        }
+
         try {
-            // Authenticate to get an access token
             this.accessToken = await authenticate();
             if (!this.accessToken) {
                 this.ordersError = 'Authentication failed.';
                 this.accountDetailsError = 'Authentication failed.';
+                this.isLoading = false; // Stop loading
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error',
@@ -50,37 +135,28 @@ export default class AccountDetailsAndOrders extends LightningElement {
                         variant: 'error',
                     }),
                 );
-                return; // Exit if authentication fails
+                return;
             }
 
-            // Construct the API URL for fetching account details
-            // Ensure the URL is correct for your Salesforce instance and API version
-            const accountApiUrl = 'https://pwcsandbox53-dev-ed.develop.my.salesforce.com/services/data/v63.0/sobjects/Account/';
-            // Fetch external account record JSON by ID
-            // Make sure the fields being queried by getExternalRecordJsonById include PersonEmail
-            const accountJson = await getAccountById({ recordId: this.accountId });
-            // await getExternalRecordJsonById({ externalInstanceUrl: accountApiUrl, recordId: this.accountId, accessToken: this.accessToken });
+            const accountJson = await getAccountById({ recordId: this._accountId });
 
             if (accountJson) {
-                this.accountDetails = accountJson; // Parse the JSON string to an object
-                this.accountDetailsError = undefined; // Clear any previous account details error
+                this.accountDetails = accountJson;
+                this.accountDetailsError = undefined;
 
-                // Ensure PersonEmail is correctly retrieved and exists
                 const accountEmail = this.accountDetails.PersonEmail;
                 if (accountEmail) {
-                    // Fetch orders based on the account email
                     const orderDataList = await getOrdersAndDetailsByEmail({ email: accountEmail });
                     this.orders = orderDataList.map(order => ({
-                        // Flatten order details and add orderId and orderItems for datatable
                         ...order.orderDetails,
                         orderId: order.orderId,
                         orderItems: order.orderItems
                     }));
-                    this.ordersError = undefined; // Clear any previous orders error
+                    this.ordersError = undefined;
                 } else {
-                    this.orders = []; // No orders if no email
+                    this.orders = [];
                     this.ordersError = 'No email found for this account to fetch orders. Please ensure PersonEmail is populated for the account.';
-                    this0.dispatchEvent(
+                    this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Info',
                             message: 'No email found for this account to fetch orders. Please ensure PersonEmail is populated for the account.',
@@ -89,43 +165,73 @@ export default class AccountDetailsAndOrders extends LightningElement {
                     );
                 }
             } else {
-                this.accountDetails = undefined; // Clear account details if not found
-                this.accountDetailsError = 'Failed to load account details. Account with ID ' + this.accountId + ' might not exist or data is inaccessible.';
+                this.accountDetails = undefined;
+                this.orders = [];
+                this.accountDetailsError = 'Failed to load account details. Account with ID ' + this._accountId + ' might not exist or data is inaccessible.';
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error',
-                        message: 'Failed to load account details. Account with ID ' + this.accountId + ' might not exist or data is inaccessible.',
+                        message: 'Failed to load account details. Account with ID ' + this._accountId + ' might not exist or data is inaccessible.',
                         variant: 'error',
                     }),
                 );
             }
 
         } catch (error) {
-            // Handle any errors during the fetch process
             this.accountDetailsError = error.body ? error.body.message : error.message;
             this.ordersError = error.body ? error.body.message : error.message;
+            this.orders = [];
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error',
-                    message: `Error loading data: ${this.accountDetailsError || this.ordersError}. Please check Apex logs for getExternalRecordJsonById and getOrdersAndDetailsByEmail.`,
+                    message: `Error loading data: ${this.accountDetailsError || this.ordersError}. Please check Apex logs for getAccountById and getOrdersAndDetailsByEmail.`,
                     variant: 'error',
                 }),
             );
         }
+        this.isLoading = false; // Stop loading after fetch
     }
 
-    // Handles row actions in the orders datatable
+    get noOrdersFound() {
+        return !this.isLoading && this.orders.length === 0 && !this.ordersError;
+    }
+
+    get sortedOrders() {
+        if (!this.orders) return [];
+        const sorted = [...this.orders];
+        sorted.sort((a, b) => {
+            let valA = a[this.sortBy];
+            let valB = b[this.sortBy];
+            // For dates, convert to Date
+            if (this.sortBy === 'EffectiveDate') {
+                valA = valA ? new Date(valA) : 0;
+                valB = valB ? new Date(valB) : 0;
+            }
+            if (valA === undefined || valA === null) valA = '';
+            if (valB === undefined || valB === null) valB = '';
+            if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+            if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+        return sorted;
+    }
+
+    handleSort(event) {
+        const { fieldName, sortDirection } = event.detail;
+        this.sortBy = fieldName;
+        this.sortDirection = sortDirection;
+    }
+
     handleOrderRowAction(event) {
-        const actionName = event.detail.action.name; // Get the name of the action
-        const row = event.detail.row; // Get the row data
+        const actionName = event.detail.action ? event.detail.action.name : event.detail.actionName;
+        const row = event.detail.row;
 
         if (actionName === 'view_order_items') {
             const selectedOrder = this.orders.find(order => order.orderId === row.orderId);
             if (selectedOrder && selectedOrder.orderItems) {
-                // Dispatch event to show order items
-                this.dispatchEvent(new CustomEvent('vieworderitems', {
-                    detail: { orderItems: selectedOrder.orderItems }
-                }));
+                this.modalOrderItems = selectedOrder.orderItems;
+                this.selectedOrderId = selectedOrder.orderId; // Set the selected order ID for the modal header
+                this.isModalOpen = true; // Open the modal
             } else {
                 this.dispatchEvent(
                     new ShowToastEvent({
@@ -136,11 +242,23 @@ export default class AccountDetailsAndOrders extends LightningElement {
                 );
             }
         } else if (actionName === 'reorder_order') {
-            this.handleReorder(row.orderId); // Call reorder function
+            this.handleReorder(row.orderId);
+        } else if (actionName === 'delete_order') {
+            this.handleDeleteOrder(row.orderId);
+        } else if (actionName === 'refund_order') {
+            this.handleRefundOrder(row.orderId);
+        } else if (actionName === 'partial_refund_order') {
+            this.handlePartialRefundOrder(row.orderId);
         }
     }
 
-    // Handles reordering an order
+    // Function to close the modal
+    closeModal() {
+        this.isModalOpen = false;
+        this.modalOrderItems = []; // Clear items when closing
+        this.selectedOrderId = undefined;
+    }
+
     handleReorder(orderId) {
         reorderOrder({ externalOrderId: orderId })
             .then(newOrderId => {
@@ -152,7 +270,6 @@ export default class AccountDetailsAndOrders extends LightningElement {
                             variant: 'success',
                         }),
                     );
-                    this.fetchAccountAndOrders(); // Refresh the order list after reorder
                 } else {
                     this.dispatchEvent(
                         new ShowToastEvent({
@@ -162,6 +279,8 @@ export default class AccountDetailsAndOrders extends LightningElement {
                         }),
                     );
                 }
+                // Always refresh orders after reorder attempt
+                this.fetchAccountAndOrders();
             })
             .catch(error => {
                 this.dispatchEvent(
@@ -171,6 +290,138 @@ export default class AccountDetailsAndOrders extends LightningElement {
                         variant: 'error',
                     }),
                 );
+                // Refresh orders even on error to ensure UI is up to date
+                this.fetchAccountAndOrders();
             });
+    }
+
+    handleDeleteOrder(orderId) {
+        deleteExternalOrder({ externalOrderId: orderId })
+            .then(success => {
+                if (success) {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: `Order deleted successfully!`,
+                            variant: 'success',
+                        }),
+                    );
+                } else {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Error',
+                            message: 'Failed to delete order. Check logs for details.',
+                            variant: 'error',
+                        }),
+                    );
+                }
+                // Always refresh orders after delete attempt
+                this.fetchAccountAndOrders();
+            })
+            .catch(error => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error deleting order',
+                        message: error.body ? error.body.message : error.message,
+                        variant: 'error',
+                    }),
+                );
+                // Refresh orders even on error to ensure UI is up to date
+                this.fetchAccountAndOrders();
+            });
+    }
+
+    handleRefundOrder(orderId) {
+        // Call Apex to set refund status to 'Refund'
+        refundStatus({ externalOrderId: orderId, refundStatus: 'Refund' })
+            .then(success => {
+                if (success) {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: `Order refunded successfully!`,
+                            variant: 'success',
+                        }),
+                    );
+                } else {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Error',
+                            message: 'Failed to refund order. Check logs for details.',
+                            variant: 'error',
+                        }),
+                    );
+                }
+                this.fetchAccountAndOrders();
+            })
+            .catch(error => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error refunding order',
+                        message: error.body ? error.body.message : error.message,
+                        variant: 'error',
+                    }),
+                );
+                this.fetchAccountAndOrders();
+            });
+    }
+
+    handlePartialRefundOrder(orderId) {
+        // Call Apex to set refund status to 'HalfRefund'
+        refundStatus({ externalOrderId: orderId, refundStatus: 'HalfRefund' })
+            .then(success => {
+                if (success) {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: `Order partially refunded successfully!`,
+                            variant: 'success',
+                        }),
+                    );
+                } else {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Error',
+                            message: 'Failed to partially refund order. Check logs for details.',
+                            variant: 'error',
+                        }),
+                    );
+                }
+                this.fetchAccountAndOrders();
+            })
+            .catch(error => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error partially refunding order',
+                        message: error.body ? error.body.message : error.message,
+                        variant: 'error',
+                    }),
+                );
+                this.fetchAccountAndOrders();
+            });
+    }
+
+    // Add this method to handle refresh from orderItemDetails
+    handleOrderItemsRefresh() {
+        // Reload account and orders
+        this.fetchAccountAndOrders().then(() => {
+            // After orders are refreshed, update modalOrderItems with latest data
+            if (this.selectedOrderId) {
+                const selectedOrder = this.orders.find(order => order.orderId === this.selectedOrderId);
+                if (selectedOrder && selectedOrder.orderItems) {
+                    this.modalOrderItems = selectedOrder.orderItems;
+                } else {
+                    this.modalOrderItems = [];
+                }
+            }
+        });
+    }
+
+    // Pass sort info to modal
+    get modalOrderItemSortInfo() {
+        return {
+            sortBy: this.orderItemSortBy,
+            sortDirection: this.orderItemSortDirection
+        };
     }
 }

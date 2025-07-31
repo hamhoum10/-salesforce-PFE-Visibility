@@ -164,7 +164,7 @@ public static Account getAccountById(Id recordId) {
      * @param email The email address to search for orders.
      * @return A list of OrderData wrapper objects containing comprehensive order details.
      */
-    @AuraEnabled(cacheable=true) // Set to true because this method only reads data
+    @AuraEnabled(cacheable=false) // Set to true because this method only reads data
     public static List<OrderData> getOrdersAndDetailsByEmail(String email) {
         List<OrderData> resultOrders = new List<OrderData>();
 
@@ -844,6 +844,134 @@ public static Account getAccountById(Id recordId) {
             } catch (Exception e) {
                 System.debug('Failed to deserialize order items JSON: ' + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Deletes an external order by its ID.
+     * @param externalOrderId The ID of the external order to delete.
+     * @return True if deletion was successful, false otherwise.
+     */
+    @AuraEnabled(cacheable=false)
+    public static Boolean deleteExternalOrder(String externalOrderId) {
+        if (String.isBlank(externalOrderId)) {
+            System.debug('deleteExternalOrder: externalOrderId is blank.');
+            return false;
+        }
+        String accessToken = authenticate();
+        if (accessToken == null) {
+            System.debug('deleteExternalOrder: Authentication failed.');
+            return false;
+        }
+        String endpoint = EXTERNAL_INSTANCE_URL + '/services/data/' + API_VERSION + '/sobjects/Order/' + externalOrderId;
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod('DELETE');
+        req.setHeader('Authorization', 'Bearer ' + accessToken);
+        req.setHeader('Content-Type', 'application/json');
+        Http http = new Http();
+        HttpResponse res;
+        try {
+            res = http.send(req);
+        } catch (System.CalloutException ce) {
+            System.debug('deleteExternalOrder: Callout failed: ' + ce.getMessage());
+            return false;
+        }
+        if (res.getStatusCode() == 204) {
+            System.debug('deleteExternalOrder: Successfully deleted order ' + externalOrderId);
+            return true;
+        } else {
+            System.debug('deleteExternalOrder: Failed to delete order. Status: ' + res.getStatusCode() + ' Body: ' + res.getBody());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an external OrderItem by its external Id.
+     * @param externalOrderItemId The Id of the external OrderItem to delete.
+     * @return True if deletion was successful, false otherwise.
+     */
+    @AuraEnabled(cacheable=false)
+    public static Boolean deleteExternalOrderItem(String externalOrderItemId) {
+        // This method deletes an OrderItem in the external org, not local.
+        if (String.isBlank(externalOrderItemId)) {
+            System.debug('deleteExternalOrderItem: externalOrderItemId is blank.');
+            return false;
+        }
+        String accessToken = authenticate();
+        if (accessToken == null) {
+            System.debug('deleteExternalOrderItem: Authentication failed.');
+            return false;
+        }
+        String endpoint = EXTERNAL_INSTANCE_URL + '/services/data/' + API_VERSION + '/sobjects/OrderItem/' + externalOrderItemId;
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod('DELETE');
+        req.setHeader('Authorization', 'Bearer ' + accessToken);
+        req.setHeader('Content-Type', 'application/json');
+        Http http = new Http();
+        HttpResponse res;
+        try {
+            res = http.send(req);
+        } catch (System.CalloutException ce) {
+            System.debug('deleteExternalOrderItem: Callout failed: ' + ce.getMessage());
+            return false;
+        }
+        if (res.getStatusCode() == 204) {
+            System.debug('deleteExternalOrderItem: Successfully deleted external OrderItem ' + externalOrderItemId);
+            return true;
+        } else {
+            System.debug('deleteExternalOrderItem: Failed to delete external OrderItem. Status: ' + res.getStatusCode() + ' Body: ' + res.getBody());
+            return false;
+        }
+    }
+
+    /**
+     * Updates the quantity of an external OrderItem by its external Id.
+     * @param externalOrderItemId The Id of the external OrderItem to update.
+     * @param newQuantity The new quantity value.
+     * @return True if update was successful, false otherwise.
+     */
+    @AuraEnabled(cacheable=false)
+    public static Boolean updateExternalOrderItemQuantity(String externalOrderItemId, Decimal newQuantity) {
+        // This method updates an OrderItem in the external org, not local.
+        if (String.isBlank(externalOrderItemId)) {
+            System.debug('updateExternalOrderItemQuantity: externalOrderItemId is blank.');
+            return false;
+        }
+        if (newQuantity == null) {
+            System.debug('updateExternalOrderItemQuantity: newQuantity is null.');
+            return false;
+        }
+        String accessToken = authenticate();
+        if (accessToken == null) {
+            System.debug('updateExternalOrderItemQuantity: Authentication failed.');
+            return false;
+        }
+        String endpoint = EXTERNAL_INSTANCE_URL + '/services/data/' + API_VERSION + '/sobjects/OrderItem/' + externalOrderItemId;
+        Map<String, Object> updateFields = new Map<String, Object>();
+        updateFields.put('Quantity', newQuantity);
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod('PATCH');
+        req.setHeader('Authorization', 'Bearer ' + accessToken);
+        req.setHeader('Content-Type', 'application/json');
+        req.setBody(JSON.serialize(updateFields));
+        Http http = new Http();
+        HttpResponse res;
+        try {
+            res = http.send(req);
+        } catch (System.CalloutException ce) {
+            System.debug('updateExternalOrderItemQuantity: Callout failed: ' + ce.getMessage());
+            return false;
+        }
+        if (res.getStatusCode() == 204) {
+            System.debug('updateExternalOrderItemQuantity: Successfully updated quantity for external OrderItem ' + externalOrderItemId);
+            return true;
+        } else {
+            System.debug('updateExternalOrderItemQuantity: Failed to update quantity. Status: ' + res.getStatusCode() + ' Body: ' + res.getBody());
+            return false;
         }
     }
 }

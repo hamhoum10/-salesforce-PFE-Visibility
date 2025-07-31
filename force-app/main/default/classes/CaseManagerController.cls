@@ -81,13 +81,19 @@ public static List<Case> getLinkedCases() {
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<Account> searchAccounts(String searchTerm) {
-        String searchWildcard = '%' + String.escapeSingleQuotes(searchTerm) + '%';
-        return [SELECT Id, Name, PersonEmail, Phone // Assuming Person Accounts or similar email field
-                FROM Account
-                WHERE Name LIKE :searchWildcard
-                OR PersonEmail LIKE :searchWildcard
-                OR Phone LIKE :searchWildcard
-                LIMIT 50]; // Limit results for performance
+    public static List<Account> searchAccounts(String name, String email, String phone) {
+        List<String> filters = new List<String>();
+        if (String.isNotBlank(name)) {
+            filters.add('Name LIKE \'%' + String.escapeSingleQuotes(name) + '%\'');
+        }
+        if (String.isNotBlank(email)) {
+            filters.add('PersonEmail LIKE \'%' + String.escapeSingleQuotes(email) + '%\'');
+        }
+        if (String.isNotBlank(phone)) {
+            filters.add('Phone LIKE \'%' + String.escapeSingleQuotes(phone) + '%\'');
+        }
+        String whereClause = (filters.size() > 0) ? 'WHERE ' + String.join(filters, ' AND ') : '';
+        String query = 'SELECT Id, Name, PersonEmail, Phone FROM Account ' + whereClause + ' LIMIT 50';
+        return Database.query(query);
     }
 }

@@ -1,53 +1,41 @@
 <template>
-    <lightning-card title="AI Agent Assistant" icon-name="utility:einstein">
-        <div class="slds-p-around_medium">
-            <p class="slds-text-heading_small slds-var-m-bottom_small">
-                Assisting for: <strong>{objectApiName}</strong> (ID: {recordId})
-            </p>
-
-            <div class="chat-window slds-box slds-scrollable_y slds-var-m-bottom_medium">
-                <template if:true={isBotAvailable}>
-                    <template for:each={chatMessages} for:item="msg">
-                        <div key={msg.id} class={msg.cssClass}>
-                            <p class="slds-text-title_bold">{msg.sender}:</p>
-                            <p>{msg.text}</p>
-                        </div>
-                    </template>
-                    <template if:true={isLoading}>
-                        <div class="message-bubble slds-text-align_center slds-text-color_weak slds-var-m-top_small">
-                            <lightning-spinner alternative-text="Thinking..." size="small"></lightning-spinner>
-                        </div>
-                    </template>
+    <lightning-card title="AI Chat Agent" icon-name="utility:chat">
+        <div class="slds-card__body slds-p-around_medium">
+            <div class="chat-history">
+                <template for:each={chatMessages} for:item="msg">
+                    <p key={msg.id} class={msg.type}>{msg.text}</p>
                 </template>
-                <template if:false={isBotAvailable}>
-                    <p class="slds-text-color_error slds-align_absolute_center slds-p-around_medium">
-                        Bot not configured or available. Please check the LWC's Bot ID variable.
-                    </p>
+                <template if:true={isThinking}>
+                    <p class="agent-message slds-text-align_center">Agent is typing...</p>
                 </template>
             </div>
 
-            <div class="input-area slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                <div class="slds-col slds-size_9-of-12">
-                    <lightning-input
-                        label="Your Message"
-                        variant="standard"
-                        value={userInput}
-                        onchange={handleInputChange}
-                        onkeyup={handleEnterKey}
-                        disabled={isLoading}
-                    ></lightning-input>
-                </div>
-                <div class="slds-col slds-size_3-of-12 slds-align_absolute-center">
-                    <lightning-button
-                        label="Send"
-                        icon-name="utility:send"
-                        icon-position="right"
-                        variant="brand"
-                        onclick={handleSendMessage}
-                        disabled={isLoading}
-                    ></lightning-button>
-                </div>
+            <div class="slds-m-top_medium">
+                <lightning-input
+                    label="Your Message"
+                    value={currentMessage}
+                    onchange={handleMessageChange}
+                    onkeyup={handleKeyUp}
+                    data-id="chatInput"
+                ></lightning-input>
+                <lightning-button
+                    label="Send"
+                    variant="brand"
+                    onclick={handleSendMessage}
+                    class="slds-m-top_small"
+                    disabled={isSending}
+                ></lightning-button>
             </div>
         </div>
+
+        <template if:true={flowStarted}>
+            <div style="display: none;">
+                <lightning-flow
+                    flow-api-name={flowApiName}
+                    flow-input-variables={flowInputVariables}
+                    onstatuschange={handleFlowStatusChange}
+                ></lightning-flow>
+            </div>
+        </template>
     </lightning-card>
 </template>

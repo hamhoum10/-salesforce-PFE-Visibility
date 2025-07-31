@@ -3,8 +3,33 @@
         <lightning-datatable
             key-field="orderItemId"
             data={processedOrderItems}
-            columns={columns}>
+            columns={columns}
+            onsort={handleSort}
+            sorted-by={sortBy}
+            sorted-direction={sortDirection}
+            onrowaction={handleRowAction}
+            oncellchange={handleCellChange}
+            draft-values={draftValues}>
         </lightning-datatable>
+        <!-- Only one set of Save/Cancel buttons -->
+        <template lwc:if={showSaveCancel}>
+            <div class="slds-m-top_x-small">
+                <lightning-button
+                    label="Save"
+                    onclick={handleSave}
+                    variant="brand"
+                    class="slds-m-right_x-small">
+                </lightning-button>
+                <lightning-button
+                    label="Cancel"
+                    onclick={handleCancel}
+                    variant="neutral">
+                </lightning-button>
+            </div>
+        </template>
+        <template lwc:if={isLoading}>
+            <lightning-spinner size="small"></lightning-spinner>
+        </template>
     </template>
     <template lwc:if={noOrderItemsToDisplay}>
         <p>No order items to display.</p>

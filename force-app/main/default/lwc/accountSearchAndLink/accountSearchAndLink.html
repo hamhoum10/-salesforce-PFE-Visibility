@@ -1,27 +1,49 @@
 <!-- accountSearchAndLink.html -->
 <template>
-    <lightning-input label="Search Account" onchange={handleSearchTermChange} value={searchTerm} class="slds-m-bottom_small"></lightning-input>
-    <lightning-button label="Search" onclick={searchAccounts} variant="brand"></lightning-button>
-
-    <!-- Conditional rendering for displaying search results -->
-    <template lwc:if={accounts.length}>
-        <p class="slds-text-heading_small slds-m-top_medium">Select an Account:</p>
-        <lightning-radio-group name="accountOptions"
-                               label="Account List"
-                               options={accountOptions}
-                               value={selectedAccountId}
-                               onchange={handleAccountSelection}
-                               type="vertical">
-        </lightning-radio-group>
-        <!-- Updated disabled attribute to use the new getter -->
-        <lightning-button label="Link Selected Account" onclick={linkAccount} variant="brand" class="slds-m-top_medium" disabled={isLinkButtonDisabled}></lightning-button>
-    </template>
-    <!-- Conditional rendering for no accounts found after a search, using the new getter -->
-    <template lwc:if={noAccountsFoundWithSearchTerm}>
-        <p class="slds-m-top_medium">No accounts found for "{searchTerm}".</p>
-    </template>
-    <!-- Conditional rendering for general errors -->
-    <template lwc:if={error}>
-        <p class="slds-text-color_error slds-m-top_small">Error: {error}</p>
-    </template>
+    <lightning-card title="Link Account to Case" icon-name="standard:account">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input label="Name" onchange={handleNameChange} value={searchName} class="slds-m-bottom_x-small"></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input label="Email" onchange={handleEmailChange} value={searchEmail} class="slds-m-bottom_x-small"></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input label="Phone" onchange={handlePhoneChange} value={searchPhone} class="slds-m-bottom_small"></lightning-input>
+                </div>
+            </div>
+            <div class="slds-m-top_small">
+                <lightning-button label="Search" onclick={searchAccounts} variant="brand" class="slds-m-right_small"></lightning-button>
+                <lightning-button label="Clear" onclick={clearSearch} variant="neutral"></lightning-button>
+            </div>
+            <template lwc:if={isLoading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </div>
+            </template>
+            <template lwc:if={accounts.length}>
+                <div class="slds-m-top_medium">
+                    <p class="slds-text-heading_small">Select an Account:</p>
+                    <lightning-radio-group name="accountOptions"
+                                           label="Account List"
+                                           options={accountOptions}
+                                           value={selectedAccountId}
+                                           onchange={handleAccountSelection}
+                                           type="vertical">
+                    </lightning-radio-group>
+                    <lightning-button label="Link Selected Account" onclick={linkAccount} variant="brand" class="slds-m-top_medium" disabled={isLinkButtonDisabled}></lightning-button>
+                </div>
+            </template>
+            <!-- <template lwc:if={noAccountsFoundWithSearchTerm}>
+                <p class="slds-m-top_medium">No accounts found for your search.</p>
+            </template> -->
+            <template lwc:if={successMessage}>
+                <div class="slds-m-top_medium slds-text-color_success">{successMessage}</div>
+            </template>
+            <template lwc:if={error}>
+                <div class="slds-m-top_small slds-text-color_error">Error: {error}</div>
+            </template>
+        </div>
+    </lightning-card>
 </template>
